@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  # MongoDB services 
+  mongo_db:
+    container_name: db_container
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: musala-test-db
+      MONGO_INITDB_ROOT_USERNAME: musala-test-db-user
+      MONGO_INITDB_ROOT_PASSWORD: musala-test-db-pwd
+    ports:
+      - 2717:27017
+    volumes:
+      - mongo_db:/data/db
+  
+  # Node API service 
+  api:
+    build: .
+    ports:
+      - 4000:3000 
+    volumes:
+      - .:/usr/src/app 
+    environment:
+      PORT: 3000
+      MONGODB_URI: mongodb://db_container:27017 
+      DB_NAME: musala-test-db
+      DB_USER: musala-test-db-user
+      DB_PASS: musala-test-db-pwd 
+      JWT_SECRET: musala-test-jwt-secret    
+    depends_on:
+      - mongo_db
+     
+volumes:
+  mongo_db: {}
